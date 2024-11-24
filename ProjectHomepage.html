@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iris Classification System</title>
+    <style>
+        /* General styling */
+        body {
+            background-color: #5e0e0e;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Centering container */
+        .container {
+            background-color: #3b0000;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Heading */
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Form grid layout */
+        form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        /* Input styling */
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2a0000;
+            color: white;
+        }
+
+        /* Focus styling for inputs */
+        input[type="text"]:focus {
+            outline: none;
+            background-color: #4a0c0c;
+        }
+
+        /* Button styling */
+        input[type="submit"] {
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #ddd;
+        }
+
+        /* Display result */
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Predict Iris Species</h2>
+        <form id="predictionForm">
+            <input type="text" name="SepalLengthCm" placeholder="Sepal Length" required>
+            <input type="text" name="SepalWidthCm" placeholder="Sepal Width" required>
+            <input type="text" name="PetalLengthCm" placeholder="Petal Length" required>
+            <input type="text" name="PetalWidthCm" placeholder="Petal Width" required>
+            <input type="submit" value="Predict">
+        </form>
+
+        <div id="result" class="result">Enter values and click Predict to see the result.</div>
+    </div>
+
+    <script>
+        document.getElementById("predictionForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            // Show loading message
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = "Predicting...";
+
+            // Send data to server
+            fetch("/ProjectHomepage", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.prediction) {
+                        resultDiv.textContent = `Predicted Iris Species: ${data.prediction}`;
+                    } else if (data.error) {
+                        resultDiv.textContent = `Error: ${data.error}`;
+                    } else {
+                        resultDiv.textContent = "An unexpected error occurred.";
+                    }
+                })
+                .catch(error => {
+                    resultDiv.textContent = `Error: ${error.message}`;
+                });
+        });
+    </script>
+</body>
+</html>
